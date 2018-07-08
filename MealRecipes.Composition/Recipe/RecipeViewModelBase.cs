@@ -100,6 +100,13 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 		}
 
 		/// <summary>
+		/// 比率調整後容量(XX人分)
+		/// </summary>
+		public IReadOnlyReactiveProperty<string> AdjustmentedYield {
+			get;
+		}
+
+		/// <summary>
 		/// 材料
 		/// </summary>
 		public ReadOnlyReactiveCollection<IRecipeIngredient> Ingredients {
@@ -297,6 +304,7 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 					.AddTo(this.CompositeDisposable);
 			this.Description = this.Recipe.Description.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(this.CompositeDisposable);
 			this.Yield = this.Recipe.Yield.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(this.CompositeDisposable);
+			this.AdjustmentedYield = this.Recipe.AdjustedYeild.ToReadOnlyReactiveProperty().AddTo(this.CompositeDisposable);
 			this.Ingredients = this.Recipe.Ingredients.ToReadOnlyReactiveCollection().AddTo(this.CompositeDisposable);
 			this.ShoppingList = this.Recipe.ShoppingList.ToReadOnlyReactiveProperty().AddTo(this.CompositeDisposable);
 			this.ShoppingInformationIncludedIngredients = this.Recipe.ShoppingInformationIncludedIngredients.ToReadOnlyReactiveProperty().AddTo(this.CompositeDisposable);

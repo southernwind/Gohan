@@ -88,7 +88,7 @@
 				<TextBlock>
 					<Run Text="材料" FontWeight="Bold" FontSize="19"/>
 					<Run Text="("/>
-					<Run Text="{Binding Yield.Value}" />
+					<Run Text="{Binding AdjustmentedYield.Value,Mode=OneWay}" />
 					<Run Text=")"/>
 					<Run Text="[分量調整"/>
 					<Run Text="{Binding Adjustment.Value}"/>
