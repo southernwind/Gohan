@@ -7,6 +7,11 @@ using System.Text.RegularExpressions;
 
 namespace SandBeige.MealRecipes.Composition.Utilities {
 	public static class Adjust {
+		private const string Kanji = "〇零一二三四五六七八九十壱弐参拾百佰千阡万萬億兆";
+		private const string HalfWidth = "0-9";
+		private const string FullWidth = "０-９";
+		private const string Symbol = "./．／";
+		private const string Other = "半[分玉丁]";
 		private enum DigitType {
 			Kanji,
 			FullWidth,
@@ -27,12 +32,7 @@ namespace SandBeige.MealRecipes.Composition.Utilities {
 				if (adjustment == 1) {
 					return input;
 				}
-				var kanji = "〇零一二三四五六七八九十壱弐参拾百佰千阡万萬億兆";
-				var halfWidth = "0-9";
-				var fullWidth = "０-９";
-				var symbol = "./．／";
-				var other = "半[分玉丁]";
-				var digitRegex = new Regex($"^([{kanji}]+|[{halfWidth}{fullWidth}{symbol}]+|{other})");
+				var digitRegex = new Regex($"^([{Kanji}]+|[{HalfWidth}{FullWidth}{Symbol}]+|{Other})");
 				var words = new List<Word>();
 				var temporary = "";
 				while (input.Length != 0) {
@@ -54,20 +54,15 @@ namespace SandBeige.MealRecipes.Composition.Utilities {
 				}
 				return string.Join("", words.Select(x => {
 					if (x.DigitType == DigitType.Unknown) {
-						if (Regex.IsMatch(x.Text, $"^[{kanji}]")) {
-							x.DigitType = DigitType.Kanji;
-							x.Num = Kansuji.Convert(x.Text);
-						} else if (Regex.IsMatch(x.Text, $"^[{halfWidth}]")) {
-							x.DigitType = DigitType.HalfWidth;
-							x.Num = double.Parse(Strings.StrConv(x.Text, VbStrConv.Narrow));
-						} else if (Regex.IsMatch(x.Text, $"^[{fullWidth}]")) {
-							x.DigitType = DigitType.FullWidth;
-							x.Num = double.Parse(Strings.StrConv(x.Text, VbStrConv.Narrow));
-						} else if (Regex.IsMatch(x.Text, other)) {
-							x.DigitType = DigitType.Other;
-							x.Num = 0.5;
+						if (x.Text.Where(c => c == '/' || c == '／').Count() == 1) {
+							var splitted = x.Text.Split('/', '／');
+							var num0 = ToNumber(splitted[0]);
+							var num1 = ToNumber(splitted[1]);
+
+							x.DigitType = num0.DigitType;
+							x.Num = num0.Number / num1.Number;
 						} else {
-							x.DigitType = DigitType.NotDigit;
+							(x.DigitType, x.Num) = ToNumber(x.Text);
 						}
 					}
 
@@ -99,6 +94,21 @@ namespace SandBeige.MealRecipes.Composition.Utilities {
 				return input;
 			}
 		}
+
+		private static (DigitType DigitType, double Number) ToNumber(string Text) {
+			if (Regex.IsMatch(Text, $"^[{Kanji}]")) {
+				return (DigitType.Kanji, Kansuji.Convert(Text));
+			} else if (Regex.IsMatch(Text, $"^[{HalfWidth}]")) {
+				return (DigitType.HalfWidth, double.Parse(Strings.StrConv(Text, VbStrConv.Narrow)));
+			} else if (Regex.IsMatch(Text, $"^[{FullWidth}]")) {
+				return (DigitType.FullWidth, double.Parse(Strings.StrConv(Text, VbStrConv.Narrow)));
+			} else if (Regex.IsMatch(Text, Other)) {
+				return (DigitType.Other, 0.5);
+			} else {
+				return (DigitType.NotDigit, 0);
+			}
+		}
+
 		private class Word {
 			public Word(string text = "", double num = 0, DigitType digitType = DigitType.Unknown) {
 				this.Text = text;
