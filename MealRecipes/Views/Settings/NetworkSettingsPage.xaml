@@ -1,0 +1,37 @@
+<UserControl x:Class="SandBeige.MealRecipes.Views.Settings.NetworkSettingsPage"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	xmlns:settingsVm="clr-namespace:SandBeige.MealRecipes.ViewModels.Settings"
+	xmlns:local="clr-namespace:SandBeige.MealRecipes.Views.Settings"
+	xmlns:mat="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+	mc:Ignorable="d"
+	d:DataContext="{d:DesignInstance settingsVm:NetworkSettingsViewModel}"
+	d:DesignHeight="450" d:DesignWidth="800">
+	<StackPanel>
+		<GroupBox Header="{Binding Name}">
+			<StackPanel>
+				<TextBlock Text="変更通知に使用するマルチキャストアドレスを指定します。"/>
+				<TextBlock Text="ネットワーク内で同一のアドレス、ポートを設定して下さい。"/>
+				<TextBlock Text="また、設定の反映にはアプリケーションの再起動が必要です。"/>
+				<TextBox
+					Text="{Binding IpV4Address.Value,UpdateSourceTrigger=PropertyChanged}"
+					mat:HintAssist.Hint="IPv4マルチキャストアドレス"
+					Margin="10"/>
+				<TextBox
+					Text="{Binding IpV4Port.Value,UpdateSourceTrigger=PropertyChanged}"
+					mat:HintAssist.Hint="IPv4ポート番号"
+					Margin="10"/>
+				<TextBox
+					Text="{Binding IpV6Address.Value,UpdateSourceTrigger=PropertyChanged}"
+					mat:HintAssist.Hint="IPv6マルチキャストアドレス"
+					Margin="10"/>
+				<TextBox
+					Text="{Binding IpV6Port.Value,UpdateSourceTrigger=PropertyChanged}"
+					mat:HintAssist.Hint="IPv6ポート番号"
+					Margin="10"/>
+			</StackPanel>
+		</GroupBox>
+	</StackPanel>
+</UserControl>

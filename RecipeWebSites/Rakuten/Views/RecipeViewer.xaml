@@ -1,0 +1,205 @@
+<UserControl x:Class="SandBeige.RecipeWebSites.Rakuten.Views.RecipeViewer"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:local="clr-namespace:SandBeige.RecipeWebSites.Rakuten.Views"
+	xmlns:vm="clr-namespace:SandBeige.RecipeWebSites.Rakuten.ViewModels"
+	xmlns:conv="clr-namespace:SandBeige.MealRecipes.Composition.Converters;assembly=MealRecipes.Composition"
+	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+	xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+	xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+	xmlns:behavior="clr-namespace:SandBeige.MealRecipes.Composition.Behaviors;assembly=MealRecipes.Composition"
+	xmlns:sys="clr-namespace:System;assembly=mscorlib"
+	xmlns:mat="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+	mc:Ignorable="d"
+	d:DataContext="{d:DesignInstance vm:RakutenRecipeViewModel}"
+	d:DesignHeight="400"
+	d:DesignWidth="300"
+	FontSize="16">
+	<i:Interaction.Triggers>
+		<i:EventTrigger EventName="Loaded">
+			<i:InvokeCommandAction Command="{Binding LoadRecipeCommand}"/>
+		</i:EventTrigger>
+	</i:Interaction.Triggers>
+	<UserControl.Resources>
+		<conv:BinaryToImageSourceConverter x:Key="BinaryToImageSourceConverter"/>
+		<Style TargetType="TextBlock">
+			<Setter Property="TextWrapping" Value="Wrap"></Setter>
+		</Style>
+	</UserControl.Resources>
+	<StackPanel>
+		<TextBlock Text="タグ"/>
+		<ItemsControl ItemsSource="{Binding Tags.Value}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<mat:Chip Margin="5" Cursor="Arrow">
+						<TextBlock Text="{Binding}"/>
+					</mat:Chip>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+		</ItemsControl>
+		<TextBlock>
+			<Hyperlink NavigateUri="{Binding Url.Value}" >
+				<i:Interaction.Behaviors>
+					<behavior:HyperlinkNavigateBehavior/>
+				</i:Interaction.Behaviors>
+				<TextBlock Text="{Binding Url.Value}"/>
+			</Hyperlink>
+		</TextBlock>
+		<TextBlock
+			Text="{Binding Title.Value}"
+			FontSize="24"
+			FontWeight="Bold"/>
+		<ItemsControl ItemsSource="{Binding Ratings}" Grid.IsSharedSizeScope="True">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" SharedSizeGroup="col1"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+						<TextBlock Grid.Column="0" Text="{Binding User.Value.Name.Value}"/>
+						<mat:RatingBar Grid.Column="1" Value="{Binding Value.Value,Mode=TwoWay}"/>
+					</Grid>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" MinWidth="100" MaxWidth="300"/>
+				<ColumnDefinition Width="Auto" MinWidth="200"/>
+			</Grid.ColumnDefinitions>
+
+			<Grid Grid.Column="0">
+				<ContentControl/>
+				<Grid.Resources>
+					<Style TargetType="ContentControl">
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding PhotoFilePath.Value}" Value="{x:Null}">
+								<Setter Property="Content">
+									<Setter.Value>
+										<Grid/>
+									</Setter.Value>
+								</Setter>
+							</DataTrigger>
+						</Style.Triggers>
+						<Setter Property="Content">
+							<Setter.Value>
+								<Image
+									VerticalAlignment="Top"
+									Margin="5"
+									Source="{Binding PhotoFilePath.Value}"/>
+							</Setter.Value>
+						</Setter>
+					</Style>
+				</Grid.Resources>
+			</Grid>
+			<StackPanel Grid.Column="1" >
+				<TextBlock Text="{Binding Description.Value}" TextWrapping="Wrap" MaxWidth="400" />
+				<TextBlock TextAlignment="Right">
+					<Hyperlink NavigateUri="{Binding Author.Value.Url}">
+						<i:Interaction.Behaviors>
+							<behavior:HyperlinkNavigateBehavior/>
+						</i:Interaction.Behaviors>
+						<TextBlock Text="{Binding Author.Value.Name}"/>
+					</Hyperlink>
+				</TextBlock>
+				<TextBlock>
+					<Run Text="材料" FontWeight="Bold" FontSize="19"/>
+					<Run Text="("/>
+					<Run Text="{Binding Yield.Value}" />
+					<Run Text=")"/>
+					<Run Text="[分量調整"/>
+					<Run Text="{Binding Adjustment.Value}"/>
+					<Run Text="倍]"/>
+				</TextBlock>
+				<ItemsControl ItemsSource="{Binding Ingredients}" Margin="0,10,0,0">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<StackPanel>
+								<DockPanel>
+									<Grid DockPanel.Dock="Left">
+										<TextBlock Text="{Binding Name.Value}" Margin="3" TextWrapping="Wrap"/>
+									</Grid>
+									<TextBlock DockPanel.Dock="Right" TextWrapping="Wrap">
+										<Run Text="{Binding AdjustedAmountText.Value}" />
+									</TextBlock>
+									<Grid/>
+								</DockPanel>
+								<Separator Background="LightGray"/>
+							</StackPanel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+		</Grid>
+		<ItemsControl ItemsSource="{Binding Steps}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<StackPanel MaxWidth="150" Margin="5">
+						<TextBlock FontSize="19" FontWeight="Bold" Foreground="#E0D7C1" Text="{Binding Number.Value}"/>
+						<Grid>
+							<ContentControl/>
+							<Grid.Resources>
+								<Style TargetType="ContentControl">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding PhotoFileFullPath.Value}" Value="{x:Null}">
+											<Setter Property="Content">
+												<Setter.Value>
+													<Grid/>
+												</Setter.Value>
+											</Setter>
+										</DataTrigger>
+									</Style.Triggers>
+									<Setter Property="Content">
+										<Setter.Value>
+											<Image Source="{Binding PhotoFileFullPath.Value}"/>
+										</Setter.Value>
+									</Setter>
+								</Style>
+							</Grid.Resources>
+						</Grid>
+						<TextBlock TextWrapping="Wrap" Text="{Binding StepText.Value}"/>
+					</StackPanel>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+		</ItemsControl>
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<StackPanel Margin="10" Grid.Column="2">
+				<TextBlock Text="このレシピの生い立ち" FontSize="19" FontWeight="Bold" Foreground="#E0D7C1" />
+				<TextBlock Text="{Binding History.Value}"></TextBlock>
+			</StackPanel>
+			<Separator
+				Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+				Background="LightGray"
+				Grid.Column="1"
+				Margin="10"
+				Width="1"/>
+			<StackPanel Margin="10" Grid.Column="0">
+				<TextBlock Text="コツ・ポイント" FontSize="19" FontWeight="Bold" Foreground="#E0D7C1" />
+				<TextBlock Text="{Binding Advice.Value}"></TextBlock>
+			</StackPanel>
+		</Grid>
+		<DockPanel>
+			<TextBlock FontSize="11" Foreground="#999" Margin="10" DockPanel.Dock="Right">公開日：<Run Text="{Binding PublishedDate.Value}"/></TextBlock>
+			<TextBlock FontSize="11" Foreground="#999" Margin="10" DockPanel.Dock="Right">レシピID：<Run Text="{Binding RakutenRecipeId.Value}"/></TextBlock>
+			<Grid/>
+		</DockPanel>
+	</StackPanel>
+</UserControl>

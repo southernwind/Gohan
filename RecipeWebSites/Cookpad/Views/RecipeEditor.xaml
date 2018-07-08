@@ -1,0 +1,206 @@
+<UserControl x:Class="SandBeige.RecipeWebSites.Cookpad.Views.RecipeEditor"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:local="clr-namespace:SandBeige.RecipeWebSites.Cookpad.Views"
+	xmlns:vm="clr-namespace:SandBeige.RecipeWebSites.Cookpad.ViewModels"
+	xmlns:conv="clr-namespace:SandBeige.MealRecipes.Composition.Converters;assembly=MealRecipes.Composition"
+	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+	xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+	xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+	xmlns:controls="clr-namespace:SandBeige.MealRecipes.CustomControls;assembly=MealRecipes.CustomControls"
+	xmlns:behavior="clr-namespace:SandBeige.MealRecipes.Composition.Behaviors;assembly=MealRecipes.Composition"
+	xmlns:mat="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+	mc:Ignorable="d"
+	d:DataContext="{d:DesignInstance vm:CookpadRecipeViewModel}"
+	d:DesignHeight="400"
+	d:DesignWidth="300"
+	FontSize="16">
+	<i:Interaction.Triggers>
+		<i:EventTrigger EventName="Loaded">
+			<i:InvokeCommandAction Command="{Binding LoadRecipeCommand}"/>
+		</i:EventTrigger>
+	</i:Interaction.Triggers>
+	<UserControl.Resources>
+		<conv:BinaryToImageSourceConverter x:Key="BinaryToImageSourceConverter"/>
+		<conv:StringArrayToCsvConverter x:Key="StringArrayToCsvConverter"/>
+		<conv:IntComputeConverter x:Key="IntComputeConverter" />
+		<Style TargetType="TextBlock">
+			<Setter Property="TextWrapping" Value="Wrap"></Setter>
+		</Style>
+	</UserControl.Resources>
+	<StackPanel Grid.IsSharedSizeScope="True">
+		<StackPanel>
+			<TextBox
+				Text="{Binding Tags.Value,Converter={StaticResource StringArrayToCsvConverter}}"
+				mat:HintAssist.Hint="タグ(「,」区切りで複数指定)"/>
+			<TextBlock Text="{Binding Url.Value}"/>
+			<TextBox
+				Text="{Binding Title.Value}"
+				mat:HintAssist.Hint="タイトル"/>
+		</StackPanel>
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" MinWidth="100" MaxWidth="300"/>
+				<ColumnDefinition Width="Auto" MinWidth="200"/>
+			</Grid.ColumnDefinitions>
+			<controls:ImageSelector
+				Source="{
+					Binding Photo.Value,
+					Converter={
+						StaticResource BinaryToImageSourceConverter
+					},
+					Mode=TwoWay
+				}"/>
+			<StackPanel Grid.Column="1" >
+				<TextBox
+					Text="{Binding Description.Value}"
+					TextWrapping="Wrap"
+					MaxWidth="400"
+					mat:HintAssist.Hint="レシピ説明"/>
+				<StackPanel Orientation="Horizontal">
+					<TextBlock VerticalAlignment="Bottom" Margin="0,0,0,8">
+						<Run Text="材料" FontWeight="Bold" FontSize="19"/>
+						<Run Text="("/>
+					</TextBlock>
+					<TextBox Text="{Binding Yield.Value}" MinWidth="80"/>
+					<TextBlock VerticalAlignment="Bottom" Margin="0,0,0,8">
+						<Run Text=")"/>
+					</TextBlock>
+					<TextBlock Text="例) 2人分" VerticalAlignment="Bottom" Margin="0,0,0,8"/>
+				</StackPanel>
+				<ItemsControl ItemsSource="{Binding Ingredients}" Margin="0,10,0,0" Grid.IsSharedSizeScope="True">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<StackPanel>
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" MinWidth="100" SharedSizeGroup="col1"/>
+										<ColumnDefinition Width="5"/>
+										<ColumnDefinition Width="Auto" MinWidth="100" SharedSizeGroup="col2"/>
+										<ColumnDefinition Width="5"/>
+										<ColumnDefinition Width="Auto" MinWidth="100" SharedSizeGroup="col3"/>
+										<ColumnDefinition Width="5"/>
+										<ColumnDefinition Width="Auto"/>
+									</Grid.ColumnDefinitions>
+									<TextBox
+										Grid.Column="0"
+										Text="{Binding Category.Value}"
+										TextWrapping="Wrap"
+										mat:HintAssist.Hint="グループ"/>
+									<TextBox
+										Grid.Column="2"
+										Text="{Binding Name.Value}"
+										TextWrapping="Wrap"
+										mat:HintAssist.Hint="材料名"/>
+									<TextBox
+										Grid.Column="4"
+										Text="{Binding AmountText.Value}"
+										TextWrapping="Wrap"
+										mat:HintAssist.Hint="分量"/>
+									<Button
+										Grid.Column="6"
+										Command="{Binding DataContext.RemoveIngredientCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+										<mat:PackIcon Kind="Delete"/>
+										<Button.CommandParameter>
+											<MultiBinding Converter="{StaticResource IntComputeConverter}" ConverterParameter="{}{0}-1">
+												<Binding Path="Id.Value"></Binding>
+											</MultiBinding>
+										</Button.CommandParameter>
+									</Button>
+								</Grid>
+								<Separator Background="LightGray"/>
+							</StackPanel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+				<Button
+					Content="材料を追加する"
+					Command="{Binding InsertIngredientCommand}"
+					CommandParameter="{Binding Ingredients.Count}">
+				</Button>
+			</StackPanel>
+		</Grid>
+		<ItemsControl ItemsSource="{Binding Steps}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<StackPanel MaxWidth="150" Margin="5">
+						<StackPanel Orientation="Horizontal">
+							<Button
+								Content="追加"
+								Command="{Binding DataContext.InsertStepCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+								CommandParameter="{Binding Number.Value}">
+							</Button>
+							<Button
+								Content="削除"
+								Command="{Binding DataContext.RemoveStepCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+								<Button.CommandParameter>
+									<MultiBinding Converter="{StaticResource IntComputeConverter}" ConverterParameter="{}{0}-1">
+										<Binding Path="Number.Value"></Binding>
+									</MultiBinding>
+								</Button.CommandParameter>
+							</Button>
+						</StackPanel>
+						<TextBlock FontSize="19" FontWeight="Bold" Foreground="#E0D7C1" Text="{Binding Number.Value}"/>
+						<controls:ImageSelector Source="{
+							Binding Photo.Value,
+							Converter={StaticResource BinaryToImageSourceConverter},
+							Mode=TwoWay
+						}"/>
+						<TextBox TextWrapping="Wrap" Text="{Binding StepText.Value}" AcceptsReturn="True"></TextBox>
+					</StackPanel>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+		</ItemsControl>
+		<Button
+			Content="手順を追加する"
+			Command="{Binding InsertStepCommand}"
+			CommandParameter="{Binding Steps.Count}">
+		</Button>
+		<Grid Grid.IsSharedSizeScope="True">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" SharedSizeGroup="row1"/>
+			</Grid.RowDefinitions>
+			<TextBox
+				mat:HintAssist.Hint="コツ・ポイント"
+				Grid.Row="0"
+				Grid.Column="0"
+				Text="{Binding Advice.Value}"
+				TextWrapping="Wrap"
+				AcceptsReturn="True"/>
+			<Separator
+				Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+				Background="LightGray"
+				Grid.Row="0"
+				Grid.Column="1"
+				Margin="10"
+				Width="1"/>
+			<TextBox
+				mat:HintAssist.Hint="このレシピの生い立ち"
+				Grid.Column="2"
+				Grid.Row="0"
+				Text="{Binding History.Value}"
+				TextWrapping="Wrap"
+				AcceptsReturn="True"/>
+		</Grid>
+		<DockPanel>
+			<StackPanel DockPanel.Dock="Right" Orientation="Horizontal" >
+				<TextBox Text="{Binding UpdateDate.Value}" Width="100" mat:HintAssist.Hint="更新日"/>
+				<TextBox Text="{Binding PublishedDate.Value}" Width="100" mat:HintAssist.Hint="公開日"/>
+				<TextBox Text="{Binding CookpadRecipeId.Value}" Width="100" mat:HintAssist.Hint="レシピID"/>
+			</StackPanel>
+			<Grid/>
+		</DockPanel>
+	</StackPanel>
+</UserControl>

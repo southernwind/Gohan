@@ -1,0 +1,403 @@
+<UserControl x:Class="SandBeige.MealRecipes.Views.Recipe.SearchRecipeControl"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	xmlns:recipeVm="clr-namespace:SandBeige.MealRecipes.ViewModels.Recipe"
+	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+	xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+	xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+	xmlns:compositionValidationRules="clr-namespace:SandBeige.MealRecipes.Composition.ValidationRules;assembly=MealRecipes.Composition"
+	xmlns:mat="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+	xmlns:recipeV="clr-namespace:SandBeige.MealRecipes.Views.Recipe"
+	xmlns:dialog="clr-namespace:SandBeige.MealRecipes.Composition.Dialog;assembly=MealRecipes.Composition"
+	xmlns:system="clr-namespace:System;assembly=mscorlib"
+	mc:Ignorable="d"
+	x:Name="root"
+	d:DataContext="{d:DesignInstance recipeVm:SearchRecipeViewModel}"
+	d:DesignHeight="450" d:DesignWidth="800">
+	<i:Interaction.Triggers>
+		<l:InteractionMessageTrigger
+			MessageKey="OpenNotifyWindow"
+			Messenger="{Binding Messenger}">
+		<l:TransitionInteractionMessageAction WindowType="{x:Type dialog:NotifyWindow}" Mode="Normal"/>
+		</l:InteractionMessageTrigger>
+		<l:InteractionMessageTrigger MessageKey="OpenDialogWindow" Messenger="{Binding Messenger}">
+			<l:TransitionInteractionMessageAction WindowType="{x:Type dialog:DialogWindow}" Mode="Modal" IsOwned="True"/>
+		</l:InteractionMessageTrigger>
+		<l:InteractionMessageTrigger 
+				MessageKey="OpenEditRecipeWindow"
+				Messenger="{Binding Messenger}">
+			<l:TransitionInteractionMessageAction
+				WindowType="{x:Type recipeV:EditRecipeWindow}" Mode="Modal" IsOwned="True"/>
+		</l:InteractionMessageTrigger>
+	</i:Interaction.Triggers>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<mat:Card Grid.Row="0" Background="{DynamicResource MaterialDesignBackground}">
+			<StackPanel>
+				<Expander Header="検索条件">
+					<Border BorderBrush="LightGray" BorderThickness="0.99" Margin="5" Padding="5">
+						<StackPanel>
+							<StackPanel.Resources>
+								<Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type RadioButton}}">
+									<Setter Property="VerticalAlignment" Value="Bottom"/>
+								</Style>
+							</StackPanel.Resources>
+							<WrapPanel>
+								<StackPanel HorizontalAlignment="Left" Margin="5">
+									<StackPanel Orientation="Horizontal">
+										<TextBlock Text="検索対象 : "/>
+										<CheckBox Content="タイトル" IsChecked="{Binding IsTitleSearchTarget.Value}"/>
+										<CheckBox Content="材料" IsChecked="{Binding IsIngredientSearchTarget.Value}"/>
+										<CheckBox Content="手順" IsChecked="{Binding IsStepSearchTarget.Value}"/>
+									</StackPanel>
+									<TextBox
+										Text="{Binding SearchWord.Value,UpdateSourceTrigger=PropertyChanged}"
+										mat:HintAssist.Hint="検索文字列"/>
+								</StackPanel>
+								<StackPanel Margin="5" VerticalAlignment="Bottom">
+									<StackPanel Orientation="Horizontal">
+										<TextBox Width="80" mat:HintAssist.Hint="最終利用日">
+											<TextBox.Text>
+												<Binding
+													Path="LastUsedDate.Value"
+													UpdateSourceTrigger="PropertyChanged"
+													NotifyOnValidationError="True"
+													Converter="{StaticResource DateTimeToStringConverter}">
+													<Binding.ValidationRules>
+														<compositionValidationRules:DateTimeValidationRule/>
+													</Binding.ValidationRules>
+												</Binding>
+											</TextBox.Text>
+										</TextBox>
+										<RadioButton
+											Content="以前"
+											IsChecked="{Binding IsBeforeLastUsedDate.Value}"
+											Margin="0,0,0,8"/>
+										<RadioButton
+											Content="以後"
+											IsChecked="{Binding IsBeforeLastUsedDate.Value,Converter={StaticResource ReverseBooleanConverter},Mode=OneTime}"
+											Margin="0,0,0,8"/>
+									</StackPanel>
+								</StackPanel>
+								<StackPanel Margin="5" VerticalAlignment="Bottom">
+									<StackPanel Orientation="Horizontal">
+										<TextBox
+											Width="60"
+											Text="{Binding UsageCount.Value,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource StringEmptyToNullConverter}}"
+											mat:HintAssist.Hint="使用回数"/>
+										<RadioButton
+											Content="以上"
+											IsChecked="{Binding IsUsageCountMoreThan.Value}"
+											Margin="0,0,0,8"/>
+										<RadioButton
+											Content="以下"
+											IsChecked="{Binding IsUsageCountMoreThan.Value,Converter={StaticResource ReverseBooleanConverter},Mode=OneTime}"
+											Margin="0,0,0,8"/>
+									</StackPanel>
+								</StackPanel>
+								<StackPanel VerticalAlignment="Bottom">
+									<TextBlock Text="アーカイブレシピを含む"/>
+									<ToggleButton IsChecked="{Binding IncludingArchive.Value}" Margin="0,0,0,8"/>
+								</StackPanel>
+								<Separator Width="999999999"/>
+								<ItemsControl ItemsSource="{Binding Ratings}" Grid.IsSharedSizeScope="True">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Grid Margin="0,0,5,0">
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="Auto" SharedSizeGroup="col1"/>
+													<ColumnDefinition Width="30"/>
+													<ColumnDefinition Width="Auto"/>
+												</Grid.ColumnDefinitions>
+												<TextBox Grid.Column="0" Text="{Binding Value.Value}" TextAlignment="Right">
+													<mat:HintAssist.Hint>
+														<TextBlock>
+															<Run Text="{Binding User.Value.Name.Value}"/>
+															<Run Text="の評価"/>
+														</TextBlock>
+													</mat:HintAssist.Hint>
+												</TextBox>
+												<TextBlock
+													Grid.Column="1"
+													Text="以上"
+													VerticalAlignment="Bottom"
+													Margin="0,0,0,8"/>
+											</Grid>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<WrapPanel/>
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+								</ItemsControl>
+							</WrapPanel>
+							<Separator Width="999999999" Margin="0,10"/>
+							<TextBlock Text="タグ選択"/>
+							<ItemsControl ItemsSource="{Binding TagList}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<CheckBox Content="{Binding Value}" IsChecked="{Binding Selected}" Margin="0,0,10,0"/>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<WrapPanel/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+							</ItemsControl>
+							<Separator Width="999999999" Margin="0,10"/>
+							<mat:Card Background="{DynamicResource MaterialDesignBackground}">
+								<Expander>
+									<Expander.HeaderTemplate>
+										<DataTemplate>
+											<TextBlock Text="追加検索条件"/>
+										</DataTemplate>
+									</Expander.HeaderTemplate>
+									<StackPanel>
+										<Grid>
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="*"/>
+												<ColumnDefinition Width="Auto"/>
+											</Grid.ColumnDefinitions>
+											<ComboBox x:Name="Cmb" mat:HintAssist.Hint="プラグイン検索条件を選択" ItemsSource="{Binding SearchConditionPlugins}">
+												<ComboBox.ItemTemplate>
+													<DataTemplate>
+														<TextBlock Text="{Binding Name}"/>
+													</DataTemplate>
+												</ComboBox.ItemTemplate>
+											</ComboBox>
+											<Button Grid.Column="1" Command="{Binding AddPluginSearchConditionCommand}" CommandParameter="{Binding SelectedItem,ElementName=Cmb}">
+												<mat:PackIcon Kind="Plus"/>
+											</Button>
+										</Grid>
+										<ItemsControl ItemsSource="{Binding PluginSearchConditions}">
+											<ItemsControl.ItemTemplate>
+												<DataTemplate>
+													<Grid>
+														<Grid.ColumnDefinitions>
+															<ColumnDefinition Width="*"></ColumnDefinition>
+															<ColumnDefinition Width="Auto"></ColumnDefinition>
+														</Grid.ColumnDefinitions>
+														<ContentControl Grid.Column="0" Content="{Binding View}"/>
+														<Button
+															Grid.Column="1"
+															Command="{Binding DataContext.RemovePluginSearchConditionCommand,RelativeSource={RelativeSource AncestorType=UserControl}}"
+															CommandParameter="{Binding ViewModel}">
+															<mat:PackIcon Kind="Delete"/>
+														</Button>
+													</Grid>
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
+									</StackPanel>
+								</Expander>
+							</mat:Card>
+						</StackPanel>
+					</Border>
+				</Expander>
+				<Border
+					Background="{DynamicResource MaterialDesignDivider}"
+					Height="1"
+					HorizontalAlignment="Stretch"
+					SnapsToDevicePixels="True" />
+				<Expander Header="並び替え">
+					<Grid Margin="5">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+						<ItemsControl Grid.Column="0" ItemsSource="{Binding SortConditions}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<StackPanel Orientation="Horizontal">
+										<ComboBox ItemsSource="{
+											Binding DataContext.SortItems,
+											RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+											SelectedItem="{Binding SortItem}"
+											mat:HintAssist.Hint="並び替え条件を選択">
+											<ComboBox.ItemTemplate>
+												<DataTemplate>
+													<TextBlock Text="{Binding Name}"/>
+												</DataTemplate>
+											</ComboBox.ItemTemplate>
+										</ComboBox>
+										<ComboBox
+											ItemsSource="{Binding Source={StaticResource SortOrders}}"
+											SelectedItem="{Binding SortOrder}">
+											<ComboBox.ItemTemplate>
+												<DataTemplate>
+													<TextBlock Text="{Binding Converter={StaticResource SortOrderToStringConverter}}"/>
+												</DataTemplate>
+											</ComboBox.ItemTemplate>
+										</ComboBox>
+										<Button
+											Command="{Binding DataContext.RemoveSortConditionCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+											CommandParameter="{Binding }">
+											<mat:PackIcon Kind="Delete"/>
+										</Button>
+									</StackPanel>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+						<Button Grid.Column="1" VerticalAlignment="Top" Command="{Binding AddSortConditionCommand}" Margin="10,0">
+							<mat:PackIcon Kind="Plus"/>
+						</Button>
+					</Grid>
+				</Expander>
+			</StackPanel>
+		</mat:Card>
+		<Grid
+			Grid.Row="2"
+			Panel.ZIndex="1"
+			Background="#5555"
+			Visibility="{Binding IsBusy.Value,Converter={StaticResource BooleanToVisibilityConverter}}">
+			<ProgressBar
+			Style="{StaticResource MaterialDesignCircularProgressBar}"
+			Value="0"
+			Width="50"
+			IsIndeterminate="True" />
+		</Grid>
+		<ListBox
+			Panel.ZIndex="0"
+			Grid.IsSharedSizeScope="True"
+			Grid.Row="2"
+			ItemsSource="{Binding SearchResult.Value}"
+			SelectedItem="{Binding DecidedRecipe.Value}"
+			ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+			VirtualizingPanel.ScrollUnit="Pixel"
+			HorizontalContentAlignment="Stretch">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource MaterialDesignDivider}">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" SharedSizeGroup="col1"/>
+								<ColumnDefinition Width="Auto" SharedSizeGroup="col2"/>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<Image
+								MaxHeight="55"
+								x:Name="col1"
+								Source="{Binding ThumbnailFilePath.Value}"
+								Grid.Column="0" />
+							<TextBlock
+								Grid.Column="1"
+								x:Name="col2"
+								Text="{Binding Title.Value}" VerticalAlignment="Center"/>
+							<Separator
+								Grid.Column="2"
+								x:Name="col3"
+								Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+								Background="LightGray"
+								Margin="10"
+								Width="1"/>
+							<ItemsControl
+								Grid.Column="3"
+								VerticalAlignment="Center"
+								ItemsSource="{Binding Ingredients}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Border BorderBrush="Black" BorderThickness="0,0,0,.4" Margin="5,0">
+											<TextBlock TextWrapping="Wrap">
+												<Run Text="{Binding Name.Value}"/>
+												<Run Text="{Binding AmountText.Value}"/>
+											</TextBlock>
+										</Border>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<WrapPanel/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+							</ItemsControl>
+							<StackPanel
+								Grid.Column="4">
+								<Button
+									Command="{Binding DataContext.EditRecipeCommand,RelativeSource={RelativeSource AncestorType=recipeV:SearchRecipeControl}}"
+									CommandParameter="{Binding}"
+									ToolTip="レシピ編集">
+									<mat:PackIcon Kind="TableEdit"/>
+								</Button>
+								<Button
+									Command="{Binding DataContext.DeleteRecipeCommand,RelativeSource={RelativeSource AncestorType=recipeV:SearchRecipeControl}}"
+									CommandParameter="{Binding}"
+									ToolTip="レシピ削除">
+									<mat:PackIcon Kind="Delete"/>
+								</Button>
+							</StackPanel>
+						</Grid>
+					</Border>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+			<ListBox.ItemContainerStyle>
+				<Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+					<Setter Property="ContextMenu">
+						<Setter.Value>
+							<ContextMenu>
+								<MenuItem Header="アーカイブ化" Command="{Binding PlacementTarget.DataContext.ArchiveCommand,RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+								<MenuItem Header="アーカイブ化解除" Command="{Binding PlacementTarget.DataContext.UnarchiveCommand,RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+							</ContextMenu>
+						</Setter.Value>
+					</Setter>
+				</Style>
+			</ListBox.ItemContainerStyle>
+		</ListBox>
+		<!-- ページコントロール -->
+		<Grid Grid.Row="3" Visibility="{Binding IsMultiPage.Value,Converter={StaticResource BooleanToVisibilityConverter} }">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<Button Grid.Column="1" Command="{Binding PreviousCommand}" Style="{StaticResource MaterialDesignFlatButton}">
+				<mat:PackIcon Kind="ArrowLeftDropCircleOutline"/>
+			</Button>
+			<ItemsControl Grid.Column="2" ItemsSource="{Binding PageList.Value}" Margin="5">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<Button
+							Content="{Binding}"
+							Margin="5"
+							Style="{StaticResource MaterialDesignFlatButton}"
+							Command="{
+								Binding DataContext.TransitionCommand,
+								RelativeSource={RelativeSource AncestorType=ItemsControl}
+							}"
+							CommandParameter="{Binding}">
+							<Button.IsEnabled>
+								<MultiBinding Converter="{StaticResource NotEqualsConverter}">
+									<Binding
+										Path="DataContext.CurrentPage.Value"
+										RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
+									<Binding/>
+								</MultiBinding>
+							</Button.IsEnabled>
+						</Button>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<WrapPanel/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+			</ItemsControl>
+			<Button Grid.Column="3" Command="{Binding NextCommand}" Style="{StaticResource MaterialDesignFlatButton}">
+				<mat:PackIcon Kind="ArrowRightDropCircleOutline"/>
+			</Button>
+		</Grid>
+	</Grid>
+</UserControl>
+ 

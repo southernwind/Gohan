@@ -1,0 +1,92 @@
+<Controls:MetroWindow x:Class="SandBeige.MealRecipes.Views.MainWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:local="clr-namespace:SandBeige.MealRecipes.Views"
+	xmlns:recipeV="clr-namespace:SandBeige.MealRecipes.Views.Recipe"
+	xmlns:calendarV="clr-namespace:SandBeige.MealRecipes.Views.Calendar"
+	xmlns:vm="clr-namespace:SandBeige.MealRecipes.ViewModels"
+	xmlns:recipeVm="clr-namespace:SandBeige.MealRecipes.ViewModels.Recipe"
+	xmlns:calendarVm="clr-namespace:SandBeige.MealRecipes.ViewModels.Calendar"
+	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+	xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+	xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+	xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+	xmlns:settingsV="clr-namespace:SandBeige.MealRecipes.Views.Settings"
+	xmlns:mat="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+	TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+	Background="{DynamicResource MaterialDesignPaper}"
+	GlowBrush="{DynamicResource AccentColorBrush}"
+	mc:Ignorable="d"
+	d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
+	Title="ごはん"
+	Width="1280"
+	Height="800"
+	MinHeight="350"
+	MinWidth="525"
+	Icon="/Gohan;component/Resources/gohan_square.ico"
+	TitleCharacterCasing="Normal">
+	<Controls:MetroWindow.RightWindowCommands>
+		<Controls:WindowCommands>
+			<i:Interaction.Triggers>
+				<l:InteractionMessageTrigger MessageKey="OpenSettingsWindow" Messenger="{Binding Messenger}">
+					<l:TransitionInteractionMessageAction WindowType="{x:Type settingsV:SettingsWindow}" Mode="Modal" IsOwned="True"/>
+				</l:InteractionMessageTrigger>
+			</i:Interaction.Triggers>
+			<Button Command="{Binding OpenSettingsWindowCommand}">
+				<mat:PackIcon Kind="Settings"/>
+			</Button>
+		</Controls:WindowCommands>
+	</Controls:MetroWindow.RightWindowCommands>
+	<i:Interaction.Triggers>
+		<i:EventTrigger EventName="ContentRendered">
+			<l:LivetCallMethodAction MethodTarget="{Binding}" MethodName="Initialize" />
+		</i:EventTrigger>
+		<i:EventTrigger EventName="Closing">
+			<l:LivetCallMethodAction MethodTarget="{Binding}" MethodName="SaveSettings" />
+		</i:EventTrigger>
+		<i:EventTrigger EventName="Closed">
+			<l:DataContextDisposeAction/>
+		</i:EventTrigger>
+	</i:Interaction.Triggers>
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		<ListBox Grid.Column="0" ItemsSource="{Binding ContentItems}" SelectedItem="{Binding SelectedContent.Value}">
+			<ListBox.ItemContainerStyle>
+				<Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+					<Setter Property="Height" Value="50"/>
+					<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+					<Setter Property="IsSelected" Value="{Binding IsSelected.Value}"/>
+					<Setter Property="FontSize" Value="15"/>
+					<Setter Property="FontWeight" Value="Bold"/>
+				</Style>
+			</ListBox.ItemContainerStyle>
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<StackPanel>
+						<TextBlock Text="{Binding Name}" Margin="10,0"/>
+					</StackPanel>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+		<Grid Grid.Column="1">
+			<ContentControl Content="{Binding SelectedContent.Value}"/>
+			<Grid.Resources>
+				<DataTemplate DataType="{x:Type recipeVm:RecipeBookViewModel}">
+					<recipeV:RecipeBook/>
+				</DataTemplate>
+				<DataTemplate DataType="{x:Type calendarVm:CalendarViewModel}">
+					<calendarV:CalendarView/>
+				</DataTemplate>
+				<DataTemplate DataType="{x:Type recipeVm:RecipeViewerContainerViewModel}">
+					<recipeV:RecipeViewerContainer/>
+				</DataTemplate>
+			</Grid.Resources>
+		</Grid>
+	</Grid>
+</Controls:MetroWindow>
+

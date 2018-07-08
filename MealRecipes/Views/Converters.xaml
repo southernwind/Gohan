@@ -1,0 +1,21 @@
+<ResourceDictionary 
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:compositionConverters="clr-namespace:SandBeige.MealRecipes.Composition.Converters;assembly=MealRecipes.Composition">
+	<compositionConverters:UriToStringConverter x:Key="UriToStringConverter"/>
+	<compositionConverters:BinaryToImageSourceConverter x:Key="BinaryToImageSourceConverter"/>
+	<compositionConverters:ToStringFormatMultiConverter x:Key="ToStringFormatMultiConverter"/>
+	<compositionConverters:ToStringFormatConverter x:Key="ToStringFormatConverter"/>
+	<compositionConverters:IntComputeConverter x:Key="IntComputeConverter" />
+	<compositionConverters:ReverseBooleanConverter x:Key="ReverseBooleanConverter"/>
+	<compositionConverters:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
+	<compositionConverters:StringEmptyToNullConverter x:Key="StringEmptyToNullConverter"/>
+	<compositionConverters:StringArrayToCsvConverter x:Key="StringArrayToCsvConverter"/>
+	<compositionConverters:SortOrderToStringConverter x:Key="SortOrderToStringConverter"/>
+	<compositionConverters:ContainsConverter x:Key="ContainsConverter"/>
+	<compositionConverters:EnumEqualsConverter x:Key="EnumEqualsConverter"/>
+	<compositionConverters:IPAddressToStringConverter x:Key="IPAddressToStringConverter"/>
+	<compositionConverters:EqualsConverter x:Key="EqualsConverter"/>
+	<compositionConverters:NotEqualsConverter x:Key="NotEqualsConverter"/>
+	<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+</ResourceDictionary>
