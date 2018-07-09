@@ -95,19 +95,21 @@ namespace SandBeige.RecipeWebSites.Cookpad.Models {
 
 				var ingredients = new List<CookpadRecipeIngredient>();
 				foreach (var ingredient in htmlDoc.QuerySelectorAll("#ingredients_list .ingredient_row")) {
-					if (ingredient.ChildNodes.Any(x => x.HasClass("ingredient_category"))) {
-						var categoryNode = ingredient.QuerySelector(".ingredient_category");
-						categoryNode.RemoveChild(categoryNode.QuerySelector("span"));
-						category = categoryNode.InnerText.Trim();
-						continue;
-					}
-					var item = new CookpadRecipeIngredient(this);
-					item.Id.Value = ingredients.Count + 1; // 自動採番
-					item.Category.Value = category;
-					item.Name.Value = ingredient.QuerySelector(".ingredient_name").InnerText.Trim();
-					item.AmountText.Value = ingredient.QuerySelector(".ingredient_quantity").InnerText;
+					if (ingredient.QuerySelector(".ingredient_name") != null) {
+						if (ingredient.ChildNodes.Any(x => x.HasClass("ingredient_category"))) {
+							var categoryNode = ingredient.QuerySelector(".ingredient_category");
+							categoryNode.RemoveChild(categoryNode.QuerySelector("span"));
+							category = categoryNode.InnerText.Trim();
+							continue;
+						}
+						var item = new CookpadRecipeIngredient(this);
+						item.Id.Value = ingredients.Count + 1; // 自動採番
+						item.Category.Value = category;
+						item.Name.Value = ingredient.QuerySelector(".ingredient_name").InnerText.Trim();
+						item.AmountText.Value = ingredient.QuerySelector(".ingredient_quantity").InnerText;
 
-					ingredients.Add(item);
+						ingredients.Add(item);
+					}
 				}
 				this.Ingredients.AddRange(ingredients);
 				this.Steps.Clear();
