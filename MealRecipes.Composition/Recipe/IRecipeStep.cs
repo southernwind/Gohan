@@ -26,13 +26,6 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 		}
 
 		/// <summary>
-		/// 写真ファイルフルパス
-		/// </summary>
-		IReactiveProperty<string> PhotoFileFullPath {
-			get;
-		}
-
-		/// <summary>
 		/// 写真
 		/// </summary>
 		IReactiveProperty<byte[]> Thumbnail {
@@ -43,13 +36,6 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 		/// サムネイル写真ファイルパス
 		/// </summary>
 		IReactiveProperty<string> ThumbnailFilePath {
-			get;
-		}
-
-		/// <summary>
-		/// サムネイル写真ファイルフルパス
-		/// </summary>
-		IReactiveProperty<string> ThumbnailFileFullPath {
 			get;
 		}
 

@@ -20,5 +20,5 @@
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance compositionRecipe:IRecipeViewModel}"
 	d:DesignHeight="450" d:DesignWidth="800">
-	<Image Stretch="Uniform" Source="{Binding ThumbnailFilePath.Value}"/>
+	<Image Stretch="Uniform" Source="{Binding Thumbnail.Value}"/>
 </UserControl>

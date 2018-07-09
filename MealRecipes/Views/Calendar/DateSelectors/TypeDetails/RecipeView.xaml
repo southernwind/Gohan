@@ -27,8 +27,8 @@
 			<ColumnDefinition Width="Auto"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
-		<Image Grid.Column="0" Width="50" Margin="5,0" Source="{Binding ThumbnailFilePath.Value}"/>
-		<TextBlock Grid.Column="1" Text="{Binding Title.Value}" TextWrapping="Wrap"/>
+		<Image Grid.Column="0" Width="50" Margin="5,0" Source="{Binding Thumbnail.Value}"/>
+		<TextBlock Grid.Column="1" Text="{Binding Title.Value}" TextWrapping="Wrap" MaxWidth="200"/>
 		<Separator
 			Grid.Column="2"
 			Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"

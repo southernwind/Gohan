@@ -58,30 +58,11 @@
 				<ColumnDefinition Width="*" MinWidth="100" MaxWidth="300"/>
 				<ColumnDefinition Width="Auto" MinWidth="200"/>
 			</Grid.ColumnDefinitions>
-			<Grid Grid.Column="0">
-				<ContentControl/>
-				<Grid.Resources>
-					<Style TargetType="ContentControl">
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding PhotoFilePath.Value}" Value="{x:Null}">
-								<Setter Property="Content">
-									<Setter.Value>
-										<Grid/>
-									</Setter.Value>
-								</Setter>
-							</DataTrigger>
-						</Style.Triggers>
-						<Setter Property="Content">
-							<Setter.Value>
-								<Image
-									VerticalAlignment="Top"
-									Margin="5"
-									Source="{Binding PhotoFilePath.Value}"/>
-							</Setter.Value>
-						</Setter>
-					</Style>
-				</Grid.Resources>
-			</Grid>
+			<Image
+				Grid.Column="0"
+				VerticalAlignment="Top"
+				Margin="5"
+				Source="{Binding Photo.Value}"/>
 			<StackPanel Grid.Column="1" >
 				<TextBlock Text="{Binding Description.Value}" TextWrapping="Wrap" MaxWidth="400" />
 				<TextBlock>
@@ -147,27 +128,7 @@
 				<DataTemplate>
 					<StackPanel MaxWidth="150" Margin="5">
 						<TextBlock FontSize="19" FontWeight="Bold" Foreground="#E0D7C1" Text="{Binding Number.Value}"/>
-						<Grid>
-							<ContentControl/>
-							<Grid.Resources>
-								<Style TargetType="ContentControl">
-									<Style.Triggers>
-										<DataTrigger Binding="{Binding PhotoFileFullPath.Value}" Value="{x:Null}">
-											<Setter Property="Content">
-												<Setter.Value>
-													<Grid/>
-												</Setter.Value>
-											</Setter>
-										</DataTrigger>
-									</Style.Triggers>
-									<Setter Property="Content">
-										<Setter.Value>
-											<Image Source="{Binding PhotoFileFullPath.Value}"/>
-										</Setter.Value>
-									</Setter>
-								</Style>
-							</Grid.Resources>
-						</Grid>
+						<Image Source="{Binding Photo.Value}"/>
 						<TextBlock TextWrapping="Wrap" Text="{Binding StepText.Value}"/>
 					</StackPanel>
 				</DataTemplate>

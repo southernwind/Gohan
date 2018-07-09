@@ -18,11 +18,13 @@ using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace SandBeige.MealRecipes.Composition.Recipe {
 	/// <summary>
@@ -434,7 +436,7 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 				}
 			});
 
-			this.PhotoFilePath.Where(x => x != null).Subscribe(x => {
+			this.PhotoFilePath.Where(x => x != null).ObserveOnDispatcher(DispatcherPriority.Background).ObserveOn(TaskPoolScheduler.Default).Subscribe(x => {
 				var fullpath = Path.Combine(this.Settings.GeneralSettings.ImageDirectoryPath, x);
 				if (!File.Exists(fullpath)) {
 					File.WriteAllBytes(fullpath, this.Photo.Value);
@@ -443,10 +445,12 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 				}
 			});
 
-			this.ThumbnailFilePath.Where(x => x != null).Subscribe(x => {
+			this.ThumbnailFilePath.Where(x => x != null).ObserveOnDispatcher(DispatcherPriority.Background).ObserveOn(TaskPoolScheduler.Default).Subscribe(x => {
 				var fullpath = Path.Combine(this.Settings.GeneralSettings.ImageDirectoryPath, x);
 				if (this.Thumbnail.Value != null && !File.Exists(fullpath)) {
 					File.WriteAllBytes(fullpath, this.Thumbnail.Value);
+				} else {
+					this.Thumbnail.Value = File.ReadAllBytes(fullpath);
 				}
 			});
 		}

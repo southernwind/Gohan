@@ -8,8 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Security.Cryptography;
+using System.Windows.Threading;
 
 namespace SandBeige.MealRecipes.Composition.Recipe {
 	public abstract class RecipeStepBase : IRecipeStep {
@@ -35,13 +37,6 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 		} = new ReactivePropertySlim<string>();
 
 		/// <summary>
-		/// サムネイルファイルフルパス
-		/// </summary>
-		public IReactiveProperty<string> PhotoFileFullPath {
-			get;
-		}
-
-		/// <summary>
 		/// サムネイル写真
 		/// </summary>
 		public IReactiveProperty<byte[]> Thumbnail {
@@ -54,14 +49,6 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 		public IReactiveProperty<string> ThumbnailFilePath {
 			get;
 		} = new ReactivePropertySlim<string>();
-
-		/// <summary>
-		/// サムネイルファイルフルパス
-		/// </summary>
-		public IReactiveProperty<string> ThumbnailFileFullPath {
-			get;
-		}
-
 
 		/// <summary>
 		/// テキスト
@@ -82,9 +69,6 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 			this._settings = settings;
 			this._logger = logger;
 
-			this.PhotoFileFullPath = this.PhotoFilePath.Where(x => x != null).Select(x => Path.Combine(this._settings.GeneralSettings.ImageDirectoryPath, x)).ToReactiveProperty();
-			this.ThumbnailFileFullPath = this.ThumbnailFilePath.Where(x => x != null).Select(x => Path.Combine(this._settings.GeneralSettings.ImageDirectoryPath, x)).ToReactiveProperty();
-
 			this.Photo.Where(x => x != null).Subscribe(x => {
 				using (var crypto = new SHA256CryptoServiceProvider()) {
 					var filePath = string.Join("", crypto.ComputeHash(x).Select(b => $"{b:X2}")) + ".png";
@@ -96,7 +80,7 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 				}
 			});
 
-			this.PhotoFilePath.Where(x => x != null).Subscribe(x => {
+			this.PhotoFilePath.Where(x => x != null).ObserveOnDispatcher(DispatcherPriority.Background).ObserveOn(TaskPoolScheduler.Default).Subscribe(x => {
 				var fullpath = Path.Combine(this._settings.GeneralSettings.ImageDirectoryPath, x);
 
 				if (!File.Exists(fullpath)) {
@@ -106,10 +90,12 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 				}
 			});
 
-			this.ThumbnailFilePath.Where(x => x != null).Subscribe(x => {
+			this.ThumbnailFilePath.Where(x => x != null).ObserveOnDispatcher(DispatcherPriority.Background).ObserveOn(TaskPoolScheduler.Default).Subscribe(x => {
 				var fullpath = Path.Combine(this._settings.GeneralSettings.ImageDirectoryPath, x);
 				if (this.Thumbnail.Value != null && !File.Exists(fullpath)) {
 					File.WriteAllBytes(fullpath, this.Thumbnail.Value);
+				} else {
+					this.Thumbnail.Value = File.ReadAllBytes(fullpath);
 				}
 			});
 		}

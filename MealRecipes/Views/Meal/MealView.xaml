@@ -84,9 +84,7 @@
 								<Image
 									Grid.Column="0"
 									MaxHeight="60"
-									Source="{
-										Binding ThumbnailFilePath.Value
-									}"/>
+									Source="{Binding Thumbnail.Value}"/>
 								<TextBlock Grid.Column="1" Text="{Binding Title.Value}" VerticalAlignment="Center"/>
 								<Grid Grid.Column="2" Margin="5">
 									<Grid.ColumnDefinitions>

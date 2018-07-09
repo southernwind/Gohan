@@ -288,7 +288,7 @@
 							<Image
 								MaxHeight="55"
 								x:Name="col1"
-								Source="{Binding ThumbnailFilePath.Value}"
+								Source="{Binding Thumbnail.Value}"
 								Grid.Column="0" />
 							<TextBlock
 								Grid.Column="1"
