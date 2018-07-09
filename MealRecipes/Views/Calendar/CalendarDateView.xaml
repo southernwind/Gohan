@@ -59,7 +59,7 @@
 				</Button>
 			</mat:Badged>
 		</Grid>
-		<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Row="1">
+		<ScrollViewer PanningMode="Both" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Row="1">
 			<ItemsControl ItemsSource="{Binding Meals}">
 				<ItemsControl.ItemContainerStyle>
 					<Style TargetType="ContentPresenter">

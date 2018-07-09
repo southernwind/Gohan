@@ -31,7 +31,7 @@
 			</TabControl.ItemTemplate>
 			<TabControl.ContentTemplate>
 				<DataTemplate>
-					<ScrollViewer>
+					<ScrollViewer PanningMode="Both">
 						<ContentPresenter Content="{Binding View}" Margin="10"/>
 					</ScrollViewer>
 				</DataTemplate>
