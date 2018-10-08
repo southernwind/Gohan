@@ -54,6 +54,13 @@ namespace SandBeige.MealRecipes.ViewModels.Settings {
 		}
 
 		/// <summary>
+		/// プラグインディレクトリパス
+		/// </summary>
+		public ReactiveProperty<string> CachesDirectoryPath {
+			get;
+		}
+
+		/// <summary>
 		/// コンストラクタ
 		/// </summary>
 		/// <param name="settings"></param>
@@ -80,10 +87,17 @@ namespace SandBeige.MealRecipes.ViewModels.Settings {
 					.ToReactivePropertyAsSynchronized(x => x.PluginsDirectoryPath).SetValidateNotifyError(x => Directory.Exists(x) ? null : "ディレクトリが存在しません")
 					.AddTo(this.CompositeDisposable);
 
+			this.CachesDirectoryPath =
+				this._settings
+					.GeneralSettings
+					.ToReactivePropertyAsSynchronized(x => x.CachesDirectoryPath).SetValidateNotifyError(x => Directory.Exists(x) ? null : "ディレクトリが存在しません")
+					.AddTo(this.CompositeDisposable);
+
 			this.IsValidated = new[] {
 					this.DataBaseFilePath.ObserveHasErrors,
 					this.ImageDirectoryPath.ObserveHasErrors,
-					this.PluginsDirectoryPath.ObserveHasErrors
+					this.PluginsDirectoryPath.ObserveHasErrors,
+					this.CachesDirectoryPath.ObserveHasErrors
 				}.CombineLatestValuesAreAllFalse()
 				.ToReactiveProperty()
 				.AddTo(this.CompositeDisposable);

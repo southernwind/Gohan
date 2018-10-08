@@ -38,6 +38,14 @@ namespace SandBeige.MealRecipes.Models.Settings {
 		} = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
 
 		/// <summary>
+		/// キャッシュディレクトリパス
+		/// </summary>
+		public string CachesDirectoryPath {
+			get;
+			set;
+		} = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Caches");
+
+		/// <summary>
 		/// データベースアドレス
 		/// </summary>
 		public string DataBaseServer {

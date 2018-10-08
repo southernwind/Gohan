@@ -425,6 +425,24 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 				}).AddTo(this.Disposable);
 
 			// 画像同期
+			// 画像の状態に関して、以下のパターンが存在する
+			//	・レシピダウンロード直後の場合
+			//		プロパティにのみ存在する
+			//		この場合、次回起動時に表示する必要があるため、プロパティ→画像フォルダにコピー
+			//	・他のクライアントからレシピダウンロード後、一度アプリケーションを終了し、再度起動してレシピを表示した場合
+			//		画像フォルダにのみ存在する
+			//		表示のために画像をファイルからプロパティにコピーする
+			//		更に、次回のために画像キャッシュフォルダに画像をキャッシュしておく(ネットワークドライブが画像フォルダであった場合に画像の読み込みに時間がかかるため。)
+			//	・前回の操作で画像がキャッシュフォルダに存在する場合
+			//		キャッシュフォルダからプロパティにコピーする
+			// 処理としては、以下のようになる
+			// プロパティにあって画像フォルダになければ、プロパティ→画像フォルダへコピー
+			// 画像フォルダにあって、プロパティになければ、画像フォルダ→プロパティ,キャッシュフォルダにコピー
+			// キャッシュフォルダにあって、プロパティになければ、キャッシュフォルダ→プロパティにコピー
+			// プロパティ→コピーはしないことにする(プロパティ→画像フォルダ→キャッシュフォルダとコピーされていくため、2回目表示時にキャッシュされるので、大きな問題にはならない)
+			// DBに保存されるのはファイル名のみで、ファイル名は(画像のハッシュ).pngとなる
+			// DBから読み込み時にPhotoFilePathプロパティに代入されるので、その変更通知を受けてPhotoプロパティにコピーする
+			// Photoプロパティで
 			this.Photo.Where(x => x != null).Subscribe(x => {
 				using (var crypto = new SHA256CryptoServiceProvider()) {
 					var filePath = string.Join("", crypto.ComputeHash(x).Select(b => $"{b:X2}")) + ".png";
@@ -436,22 +454,34 @@ namespace SandBeige.MealRecipes.Composition.Recipe {
 				}
 			});
 
-			this.PhotoFilePath.Where(x => x != null).ObserveOnDispatcher(DispatcherPriority.Background).ObserveOn(TaskPoolScheduler.Default).Subscribe(x => {
-				var fullpath = Path.Combine(this.Settings.GeneralSettings.ImageDirectoryPath, x);
-				if (!File.Exists(fullpath)) {
-					File.WriteAllBytes(fullpath, this.Photo.Value);
-				} else {
-					this.Photo.Value = File.ReadAllBytes(fullpath);
+			// 共通化用ローカル関数
+			void imageFunc(IReactiveProperty<byte[]> photo,string path){
+				var fullpath = Path.Combine(this.Settings.GeneralSettings.ImageDirectoryPath, path);
+				var cachePath = Path.Combine(this.Settings.GeneralSettings.CachesDirectoryPath, path);
+
+				// キャッシュにあればキャッシュ利用
+				if (File.Exists(cachePath)) {
+					photo.Value = File.ReadAllBytes(cachePath);
+					return;
 				}
+
+				if (!File.Exists(fullpath)) {
+					// キャッシュになく、画像ディレクトリにもない場合、プロパティ→画像ディレクトリ
+					File.WriteAllBytes(fullpath, photo.Value);
+				} else {
+					// キャッシュになく、画像ディレクトリにある場合、画像ディレクトリ→プロパティ
+					photo.Value = File.ReadAllBytes(fullpath);
+					// 次回のためにキャッシュしておく
+					File.Copy(fullpath, cachePath);
+				}
+			};
+
+			this.PhotoFilePath.Where(x => x != null).Subscribe(x => {
+				imageFunc(this.Photo, x);
 			});
 
-			this.ThumbnailFilePath.Where(x => x != null).ObserveOnDispatcher(DispatcherPriority.Background).ObserveOn(TaskPoolScheduler.Default).Subscribe(x => {
-				var fullpath = Path.Combine(this.Settings.GeneralSettings.ImageDirectoryPath, x);
-				if (this.Thumbnail.Value != null && !File.Exists(fullpath)) {
-					File.WriteAllBytes(fullpath, this.Thumbnail.Value);
-				} else {
-					this.Thumbnail.Value = File.ReadAllBytes(fullpath);
-				}
+			this.ThumbnailFilePath.Where(x => x != null).Subscribe(x => {
+				imageFunc(this.Thumbnail, x);
 			});
 		}
 

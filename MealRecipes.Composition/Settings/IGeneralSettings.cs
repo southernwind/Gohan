@@ -33,6 +33,14 @@ namespace SandBeige.MealRecipes.Composition.Settings {
 		}
 
 		/// <summary>
+		/// キャッシュディレクトリパス
+		/// </summary>
+		string CachesDirectoryPath {
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// データベースアドレス
 		/// </summary>
 		string DataBaseServer {

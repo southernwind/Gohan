@@ -15,6 +15,7 @@
 				<TextBox Text="{Binding DataBaseFilePath.Value,UpdateSourceTrigger=PropertyChanged}" mat:HintAssist.Hint="DBファイルパス" Margin="10"/>
 				<TextBox Text="{Binding ImageDirectoryPath.Value,UpdateSourceTrigger=PropertyChanged}" mat:HintAssist.Hint="画像ルートディレクトリパス" Margin="10"/>
 				<TextBox Text="{Binding PluginsDirectoryPath.Value,UpdateSourceTrigger=PropertyChanged}" mat:HintAssist.Hint="プラグインディレクトリパス" Margin="10"/>
+				<TextBox Text="{Binding CachesDirectoryPath.Value,UpdateSourceTrigger=PropertyChanged}" mat:HintAssist.Hint="キャッシュディレクトリパス" Margin="10"/>
 			</StackPanel>
 		</GroupBox>
 	</StackPanel>
