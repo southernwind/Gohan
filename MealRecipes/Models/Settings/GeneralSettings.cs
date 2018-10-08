@@ -19,7 +19,7 @@ namespace SandBeige.MealRecipes.Models.Settings {
 		public string DataBaseFilePath {
 			get;
 			set;
-		} = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "./Gohan.db");
+		} = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Gohan.db");
 
 		/// <summary>
 		/// 画像ルートディレクトリパス
@@ -27,7 +27,7 @@ namespace SandBeige.MealRecipes.Models.Settings {
 		public string ImageDirectoryPath {
 			get;
 			set;
-		} = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "./images");
+		} = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "images");
 
 		/// <summary>
 		/// プラグインディレクトリパス
@@ -35,7 +35,7 @@ namespace SandBeige.MealRecipes.Models.Settings {
 		public string PluginsDirectoryPath {
 			get;
 			set;
-		} = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "./Plugins");
+		} = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
 
 		/// <summary>
 		/// データベースアドレス
