@@ -310,7 +310,7 @@ namespace SandBeige.MealRecipes.DataBase {
 			}
 #if DEBUG
 			var factory = new LoggerFactory(new[] { new MealRecipeDbLoggerProvider() });
-			// optionsBuilder.UseLoggerFactory(factory);
+			optionsBuilder.UseLoggerFactory(factory);
 #endif
 		}
 	}
