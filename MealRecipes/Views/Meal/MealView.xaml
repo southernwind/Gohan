@@ -7,6 +7,7 @@
 	xmlns:recipeV="clr-namespace:SandBeige.MealRecipes.Views.Recipe"
 	xmlns:recipeVm="clr-namespace:SandBeige.MealRecipes.ViewModels.Recipe"
 	xmlns:compositionRecipe="clr-namespace:SandBeige.MealRecipes.Composition.Recipe;assembly=MealRecipes.Composition"
+	xmlns:compositionValidationRules="clr-namespace:SandBeige.MealRecipes.Composition.ValidationRules;assembly=MealRecipes.Composition"
 	xmlns:dialog="clr-namespace:SandBeige.MealRecipes.Composition.Dialog;assembly=MealRecipes.Composition"
 	xmlns:db="clr-namespace:SandBeige.MealRecipes.DataBase;assembly=MealRecipes.DataBase"
 	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -91,7 +92,20 @@
 										<ColumnDefinition Width="30"/>
 										<ColumnDefinition Width="Auto"/>
 									</Grid.ColumnDefinitions>
-									<TextBox Grid.Column="0" TextAlignment="Right" Text="{Binding Adjustment.Value,UpdateSourceTrigger=PropertyChanged}"/>
+									<TextBox
+										Grid.Column="0"
+										TextAlignment="Right">
+										<TextBox.Text>
+											<Binding
+												Path="Adjustment.Value"
+												UpdateSourceTrigger="PropertyChanged"
+												NotifyOnValidationError="True">
+												<Binding.ValidationRules>
+													<compositionValidationRules:NumberValidationRule/>
+												</Binding.ValidationRules>
+											</Binding>
+										</TextBox.Text>
+									</TextBox>
 									<TextBlock Grid.Column="1" Text="倍" VerticalAlignment="Bottom" Margin="0,0,0,8"/>
 								</Grid>
 								<Button
