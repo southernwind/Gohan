@@ -32,23 +32,35 @@ namespace SandBeige.MealRecipes.Composition.Utilities {
 				if (adjustment == 1) {
 					return input;
 				}
+
+				var target = input;
+				// 分量として成り立つかどうかの正規表現
 				var digitRegex = new Regex($"^([{Kanji}]+|[{HalfWidth}{FullWidth}{Symbol}]+|{Other})");
+				// もとの文字列を単語単位で分割した単語リスト
 				var words = new List<Word>();
+				// 分量になりそうにない文字列を一時的に入れておく変数
 				var temporary = "";
-				while (input.Length != 0) {
-					if (digitRegex.IsMatch(input)) {
+
+				// 1文字ずつ処理して、全て処理し終わるまでループする
+				while (target.Length != 0) {
+					// 先頭から始まる1文字以上の文字列が分量になり得るかどうか
+					if (digitRegex.IsMatch(target)) {
+						// 先頭の文字が分量になりそうな場合、今まで溜め込んでいた一時変数の文字列を単語リストに追加する
 						if (temporary.Length != 0) {
 							words.Add(new Word(temporary, 0, DigitType.NotDigit));
 							temporary = "";
 						}
-						words.Add(new Word(digitRegex.Match(input).Result("$1"), 0, DigitType.Unknown));
-						input = digitRegex.Replace(input, "");
+						// 分量調整対象として単語リストに追加
+						words.Add(new Word(digitRegex.Match(target).Result("$1"), 0, DigitType.Unknown));
+						target = digitRegex.Replace(target, "");
 					} else {
-						var firstChar = input[0];
+						// 分量になりそうなもの以外は一時変数に入れておき、あとでまとめて単語リストに追加する
+						var firstChar = target[0];
 						temporary += firstChar;
-						input = Regex.Replace(input, $"^{firstChar}", "");
+						target = target.Remove(0,1);
 					}
 				}
+
 				if (temporary.Length != 0) {
 					words.Add(new Word(temporary, 0, DigitType.NotDigit));
 				}
