@@ -51,7 +51,6 @@ namespace SandBeige.MealRecipes.ViewModels {
 			this._logger = logger;
 			var recipeViewrContainerViewModel = new RecipeViewerContainerViewModel(settings, logger).AddTo(this.CompositeDisposable);
 			this.ContentItems = new TabItemViewModelBase[] {
-				new RecipeBookViewModel(settings, logger).AddTo(this.CompositeDisposable),
 				new CalendarViewModel(settings, logger).AddTo(this.CompositeDisposable),
 				recipeViewrContainerViewModel
 			};
