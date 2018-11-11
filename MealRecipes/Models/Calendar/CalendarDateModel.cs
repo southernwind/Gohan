@@ -72,9 +72,36 @@ namespace SandBeige.MealRecipes.Models.Calendar {
 			var meal = new MealModel(this._settings, this._logger) {
 				Date = this
 			};
+
 			// MealIdの採番
 			meal.MealId.Value = this.Meals.Select(x => x.MealId.Value).Concat(new[] { 0 }).Max() + 1;
 			meal.AutoSave.Value = true;
+
+			// 食事種別の初期値として、一番多く使用されている食事種別を選択
+			using (var db = this._settings.GeneralSettings.GetMealRecipeDbContext()) {
+				var id =
+					db.Meals
+					.GroupBy(x => x.MealTypeId)
+					.Select(x => new { Id = x.Key, Count = x.Count() })
+					.ToList()
+					.Aggregate(
+						(a, b) =>
+							a.Count >= b.Count ?
+							a :
+							b
+					)?.Id;
+
+				if (id != null) {
+					meal.MealType.Value =
+						this
+							._settings
+							.Master
+							.MealTypes
+							.SingleOrDefault(x =>
+								x.MealTypeId == id
+									);
+				}
+			}
 			this.Meals.Add(meal);
 		}
 
