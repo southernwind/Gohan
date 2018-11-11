@@ -34,8 +34,18 @@ namespace SandBeige.MealRecipes {
 
 			// 各サイト読み込み
 			Creator.PluginDirectory = settings.GeneralSettings.PluginsDirectoryPath;
+			if (!Directory.Exists(Creator.PluginDirectory)) {
+				var message = $"プラグインディレクトリが見つかりません。[{Creator.PluginDirectory}]";
+				MessageBox.Show(
+					message,
+					"エラー",
+					MessageBoxButton.OK,
+					MessageBoxImage.Error);
+				this._logger.Log(LogLevel.Fatal, message);
+				Environment.Exit(1);
+			}
 			Creator.Load();
-
+			
 			using (var dataContext = settings.GeneralSettings.GetMealRecipeDbContext()) {
 				// dataContext.Database.EnsureDeleted();
 				if (dataContext.Database.EnsureCreated()) {

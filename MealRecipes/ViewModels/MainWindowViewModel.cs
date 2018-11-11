@@ -9,7 +9,7 @@ using SandBeige.MealRecipes.Models.Settings;
 using SandBeige.MealRecipes.ViewModels.Calendar;
 using SandBeige.MealRecipes.ViewModels.Recipe;
 using SandBeige.MealRecipes.ViewModels.Settings;
-
+using System.IO;
 using System.Linq;
 
 namespace SandBeige.MealRecipes.ViewModels {
@@ -64,6 +64,16 @@ namespace SandBeige.MealRecipes.ViewModels {
 
 		public void Initialize() {
 			this.ContentItems.First().IsSelected.Value = true;
+
+			var directoryPathes = new[] {
+				this._settings.GeneralSettings.ImageDirectoryPath ,
+				this._settings.GeneralSettings.CachesDirectoryPath ,
+				this._settings.GeneralSettings.PluginsDirectoryPath
+			};
+
+			if (directoryPathes.Any(x => !Directory.Exists(x))) {
+				this.OpenSettingsWindowCommand.Execute();
+			}
 		}
 
 		public void SaveSettings() {

@@ -35,7 +35,7 @@ namespace SandBeige.MealRecipes.Models.Settings {
 		public string PluginsDirectoryPath {
 			get;
 			set;
-		} = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+		} = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins");
 
 		/// <summary>
 		/// キャッシュディレクトリパス
@@ -43,7 +43,7 @@ namespace SandBeige.MealRecipes.Models.Settings {
 		public string CachesDirectoryPath {
 			get;
 			set;
-		} = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Caches");
+		} = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "caches");
 
 		/// <summary>
 		/// データベースアドレス

@@ -106,7 +106,7 @@ namespace SandBeige.MealRecipes.Models.Notifier {
 					var receivedObject = XamlServices.Load(new MemoryStream(data));
 					if (receivedObject is DbChangeArgs args) {
 						if (args.Source != this._identifier) {
-							this._logger.Log(LogLevel.Notice, $"変更通知受信 {args.Source} : [{string.Join(", ", args.TableNames)}]");
+							this._logger.Log(LogLevel.Notice, $"変更通知受信 {args.Source} : [{string.Join(", ", args.TableNames)}]　[local:{ipEndPoint}]");
 							this._received.OnNext(args);
 						}
 					}

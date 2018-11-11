@@ -164,7 +164,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "$(SolutionDir)MealRecipes\$(OutDir)Plugins\"
-copy "$(ProjectDir)$(OutDir)$(ProjectName)*" "$(SolutionDir)MealRecipes\$(OutDir)Plugins\"</PostBuildEvent>
+    <PostBuildEvent>mkdir "$(SolutionDir)MealRecipes\$(OutDir)plugins\"
+copy "$(ProjectDir)$(OutDir)$(ProjectName)*" "$(SolutionDir)MealRecipes\$(OutDir)plugins\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
