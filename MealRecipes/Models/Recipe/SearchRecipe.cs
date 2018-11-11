@@ -437,7 +437,12 @@ namespace SandBeige.MealRecipes.Models.Recipe {
 			using (var db = this._settings.GeneralSettings.GetMealRecipeDbContext()) {
 				this.TagList.Clear();
 				this.TagList.AddRange(
-					db.Tags.ToList().Select(x => {
+					db
+					.Tags
+					.Where(x => x.RecipeTags.Count != 0)
+					.OrderByDescending(x => x.RecipeTags.Count)
+					.ToList()
+					.Select(x => {
 						var tag = new SelectableValue<string>(x.TagName);
 						Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
 							h => tag.PropertyChanged += h,
