@@ -225,14 +225,27 @@ namespace SandBeige.MealRecipes.Composition.Utilities {
 				while (number > 0) {
 					var n = number % 10;
 
-					if (keta % 4 == 0 && keta != 0) {
-						result = GetKanji((long)Math.Pow(10, keta)) + result;
-					}
-
-					if (keta % 4 != 0 && n == 1) {
-						result = GetKanji((long)Math.Pow(10, keta % 4)) + result;
-					} else if (n != 0) {
-						result = GetKanji(n) + GetKanji((long)Math.Pow(10, keta % 4)) + result;
+					if (n == 0) {
+						if (keta % 4 == 0 && keta != 0) {
+							// e.g. 万/億/兆
+							result = $"{GetKanji((long)Math.Pow(10, keta))}{result}";
+						}
+					} else if (keta % 4 == 0) {
+						if (keta == 0) {
+							// 五/三/八
+							result = $"{GetKanji(n)}{result}";
+						} else {
+							// e.g. 五万/三億/八兆
+							result = $"{GetKanji(n)}{GetKanji((long)Math.Pow(10, keta))}{result}";
+						}
+					} else {
+						if (n == 1) {
+							// 十/百/千
+							result = $"{GetKanji((long)Math.Pow(10, keta % 4))}{result}";
+						} else {
+							// 六十/三百/二千
+							result = $"{GetKanji(n)}{GetKanji((long)Math.Pow(10, keta % 4))}{result}";
+						}
 					}
 
 					keta++;
